@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The GoodNews World · Gestão de Membros</title>
+<link rel="icon" href="logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0b2a6b;--navy2:#06194a;--gold:#f5b800;--ink:#0b2a6b;--bg:#eef3fb;--card:#fff;--line:#d3dcee;--mut:#5b6b8f;--red:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select{font:inherit;color:inherit}
+.hide{display:none!important}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(rgba(6,25,74,.82),rgba(6,25,74,.82)),url(logo.jpeg) center/cover}
+.lbox{background:#fff;border-radius:16px;padding:32px;width:100%;max-width:380px;border-top:5px solid var(--gold)}
+.lbox img{width:84px;border-radius:50%;display:block;margin:0 auto 12px}
+.lbox h1{font-size:1.3rem;text-align:center;margin:0}.lbox p{text-align:center;color:var(--mut);margin:4px 0 20px;font-style:italic}
+label{display:block;font-weight:700;font-size:.9rem;margin:12px 0 5px}
+input,select{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:800;cursor:pointer;background:var(--gold);color:var(--navy)}
+.btn.o{background:#fff;border:1.5px solid var(--navy)}.btn.d{background:var(--red);color:#fff}.btn.s{padding:6px 12px;font-size:.85rem}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:1.2em}
+/* shell */
+#app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{background:var(--navy2);color:#fff;padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+aside .br{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;border-bottom:2px solid var(--gold);margin-bottom:10px;font-weight:800;line-height:1.1}
+aside .br img{width:44px;border-radius:50%}
+.nav{background:none;border:0;color:#cdd8f3;text-align:left;padding:11px 12px;border-radius:9px;cursor:pointer;font-weight:700}
+.nav.on{background:var(--gold);color:var(--navy)}
+aside .me{margin-top:auto;font-size:.82rem;color:#aebbe0;padding:8px}
+main{padding:24px;min-width:0}
+h2{margin:0 0 16px;font-size:1.5rem}
+.card{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--line)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:18px}
+.kpi b{font-size:2rem;display:block;color:var(--navy)}.kpi span{color:var(--mut);font-weight:600}
+.bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.9rem}.bar i{display:block;height:12px;background:var(--gold);border-radius:6px;min-width:2px}.bar em{width:130px;font-style:normal;font-weight:600}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.tools>*{flex:1 1 150px;width:auto}.tools .btn{flex:0 0 auto}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mut)}
+.av{width:38px;height:38px;border-radius:50%;object-fit:cover;background:var(--line);display:inline-grid;place-items:center;font-weight:800;vertical-align:middle;margin-right:8px}
+.pill{background:#fff4cc;border-radius:20px;padding:2px 10px;font-weight:700;font-size:.8rem}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.f2 .full{grid-column:1/-1}
+.ph{display:flex;align-items:center;gap:14px}.ph .av{width:72px;height:72px}
+.acts{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.pg{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.pc{cursor:pointer;border-left:5px solid var(--gold)}.pc b{font-size:1.6rem;display:block}
+dialog{border:0;border-radius:16px;padding:24px;width:min(680px,94vw);max-height:92vh}dialog::backdrop{background:rgba(6,25,74,.6)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:10px;font-weight:700;z-index:99}
+@media(max-width:760px){#app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap}aside .br,aside .me{width:100%}.f2{grid-template-columns:1fr}main{padding:14px}}
+@media print{aside,.tools,.noprint{display:none!important}#app{display:block}}
+</style>
+</head>
+<body>
+
+<section id="login">
+  <form class="lbox" id="lf">
+    <img src="logo.jpeg" alt="Logo">
+    <h1>The GoodNews World</h1><p>Uma Igreja, Uma Família, Um Propósito</p>
+    <label for="em">Email</label><input id="em" type="email" required autocomplete="username">
+    <label for="pw">Palavra-passe</label><input id="pw" type="password" required autocomplete="current-password">
+    <div class="err" id="le"></div>
+    <button class="btn" style="width:100%;margin-top:8px">Entrar</button>
+  </form>
+</section>
+
+<div id="app" class="hide">
+  <aside>
+    <div class="br"><img src="logo.jpeg" alt=""><span>The GoodNews<br>World</span></div>
+    <button class="nav on" data-v="dash">Painel</button>
+    <button class="nav" data-v="mem">Membros</button>
+    <button class="nav" data-v="prov">Províncias</button>
+    <button class="nav adm" data-v="hist">Histórico</button>
+    <div class="me"><span id="who"></span><br><button class="btn o s" id="out" style="margin-top:8px;background:none;color:#fff;border-color:#fff">Sair</button></div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<dialog id="dlg"></dialog>
+<div id="toast" class="hide"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,doc,getDoc,setDoc,deleteDoc,onSnapshot,query,orderBy,limit,runTransaction,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ====== COLE AQUI A CONFIGURAÇÃO DO SEU FIREBASE ====== */
+const firebaseConfig={
+  apiKey:"AIzaSyAMM-iZiwzUiV9APRDAQJAannocYd23X3Y",authDomain:"the-goodnews-world.firebaseapp.com",projectId:"the-goodnews-world",
+  storageBucket:"the-goodnews-world.firebasestorage.app",messagingSenderId:"497944679780",appId:"1:497944679780:web:5b6805397be81f644e1671"
+};
+/* ======================================================= */
+
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const PROV=["Cabo Delgado","Gaza","Inhambane","Manica","Maputo Cidade","Maputo Província","Nampula","Niassa","Sofala","Tete","Zambézia"];
+const CIVIL=["Solteiro(a)","Casado(a)","União de facto","Divorciado(a)","Viúvo(a)"];
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let me=null,members=[],hist=[],view="dash",provSel="",unsubM,unsubH;
+const isAdmin=()=>me?.role==="admin";
+const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.remove("hide");setTimeout(()=>e.classList.add("hide"),2600)};
+const age=d=>d?Math.floor((Date.now()-new Date(d))/31557600000):null;
+const ini=n=>(n||"?").split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
+const avatar=m=>m.foto?`<img class="av" src="${m.foto}" alt="">`:`<span class="av">${esc(ini(m.nome))}</span>`;
+
+/* ---------- Auth ---------- */
+$("#lf").onsubmit=async e=>{e.preventDefault();$("#le").textContent="";
+  try{await signInWithEmailAndPassword(auth,$("#em").value,$("#pw").value)}
+  catch{$("#le").textContent="Email ou palavra-passe incorretos."}};
+$("#out").onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async u=>{
+  unsubM&&unsubM();unsubH&&unsubH();
+  if(!u){me=null;$("#app").classList.add("hide");$("#login").classList.remove("hide");return}
+  let s=await getDoc(doc(db,"users",u.uid));
+  me={uid:u.uid,email:u.email,nome:s.exists()?s.data().nome:u.email,role:s.exists()?s.data().role:"user"};
+  $("#who").textContent=`${me.nome} (${isAdmin()?"Administrador":"Utilizador"})`;
+  document.querySelectorAll(".adm").forEach(b=>b.classList.toggle("hide",!isAdmin()));
+  $("#login").classList.add("hide");$("#app").classList.remove("hide");
+  unsubM=onSnapshot(collection(db,"members"),s=>{members=s.docs.map(d=>({...d.data(),_id:d.id})).sort((a,b)=>(a.seq||0)-(b.seq||0));render()});
+  if(isAdmin())unsubH=onSnapshot(query(collection(db,"history"),orderBy("at","desc"),limit(300)),s=>{hist=s.docs.map(d=>d.data());view==="hist"&&render()});
+});
+document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{view=b.dataset.v;provSel="";document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x===b));render()});
+
+/* ---------- Helpers ---------- */
+const count=(arr,f)=>arr.reduce((o,m)=>{const k=f(m)||"—";o[k]=(o[k]||0)+1;return o},{});
+const bars=(o,tot)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="bar"><em>${esc(k)}</em><i style="width:${Math.max(2,v/Math.max(tot,1)*55)}%"></i><b>${v}</b></div>`).join("")||"<p>Sem dados.</p>";
+const ageGrp=m=>{const a=age(m.nascimento);return a==null?"—":a<13?"Crianças (0-12)":a<18?"Adolescentes (13-17)":a<36?"Jovens (18-35)":a<60?"Adultos (36-59)":"Idosos (60+)"};
+const log=(acao,m)=>addDoc(collection(db,"history"),{acao,membroId:m.id,membroNome:m.nome,provincia:m.provincia,user:me.email,at:serverTimestamp()});
+const csv=list=>{const h=["ID","Nome","Nascimento","Sexo","Telefone","Endereço","Estado civil","Província","Contacto emergência","Tel. emergência"];
+  const r=list.map(m=>[m.id,m.nome,m.nascimento,m.sexo,m.telefone,m.endereco,m.civil,m.provincia,m.emergNome,m.emergTel].map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(","));
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+[h.join(","),...r].join("\n")],{type:"text/csv"}));a.download="membros.csv";a.click()};
+
+/* ---------- Views ---------- */
+function render(){const m=$("#main");({dash:vDash,mem:vMem,prov:vProv,hist:vHist})[view](m)}
+
+function vDash(m){
+  const t=members.length,pc=count(members,x=>x.provincia);
+  m.innerHTML=`<h2>Painel geral</h2>
+  <div class="grid"><div class="card kpi"><b>${t}</b><span>Membros registados</span></div>
+  <div class="card kpi"><b>${members.filter(x=>x.sexo==="Masculino").length}</b><span>Homens</span></div>
+  <div class="card kpi"><b>${members.filter(x=>x.sexo==="Feminino").length}</b><span>Mulheres</span></div>
+  <div class="card kpi"><b>${Object.keys(pc).filter(k=>k!=="—").length}</b><span>Províncias com membros</span></div></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+  <div class="card"><h3>Por província</h3>${bars(pc,t)}</div>
+  <div class="card"><h3>Faixa etária</h3>${bars(count(members,ageGrp),t)}</div>
+  <div class="card"><h3>Estado civil</h3>${bars(count(members,x=>x.civil),t)}</div></div>`}
+
+function listHTML(list){return `<div class="tw"><table><tr><th>ID</th><th>Nome</th><th>Província</th><th>Telefone</th><th>Sexo</th><th>Idade</th><th></th></tr>
+  ${list.map(x=>`<tr><td><span class="pill">${esc(x.id)}</span></td><td>${avatar(x)}${esc(x.nome)}</td><td>${esc(x.provincia)}</td><td>${esc(x.telefone)}</td><td>${esc(x.sexo)}</td><td>${age(x.nascimento)??"—"}</td>
+  <td><button class="btn o s" data-e="${x._id}">Editar</button> ${isAdmin()?`<button class="btn d s" data-x="${x._id}">Apagar</button>`:""}</td></tr>`).join("")||`<tr><td colspan="7">Nenhum membro encontrado. Clique em “Novo membro” para registar.</td></tr>`}</table></div>`}
+function bindList(){document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>form(members.find(x=>x._id===b.dataset.e)));
+  document.querySelectorAll("[data-x]").forEach(b=>b.onclick=async()=>{const x=members.find(y=>y._id===b.dataset.x);
+    if(confirm(`Apagar ${x.nome} (${x.id})? Esta ação fica no histórico.`)){await log("Apagou",x);await deleteDoc(doc(db,"members",x._id));toast("Membro apagado")}})}
+
+function vMem(m){
+  m.innerHTML=`<h2>Membros</h2><div class="tools"><input id="q" placeholder="Pesquisar nome, ID, telefone…">
+  <select id="fp"><option value="">Todas as províncias</option>${PROV.map(p=>`<option>${p}</option>`).join("")}</select>
+  <select id="fs"><option value="">Sexo</option><option>Masculino</option><option>Feminino</option></select>
+  <select id="fc"><option value="">Estado civil</option>${CIVIL.map(p=>`<option>${p}</option>`).join("")}</select>
+  <button class="btn" id="nw">+ Novo membro</button><button class="btn o" id="ex">Exportar CSV</button></div>
+  <div class="card" id="lst"></div>`;
+  const f=()=>{const q=$("#q").value.toLowerCase();
+    const l=members.filter(x=>(!q||[x.nome,x.id,x.telefone].join(" ").toLowerCase().includes(q))&&(!$("#fp").value||x.provincia===$("#fp").value)&&(!$("#fs").value||x.sexo===$("#fs").value)&&(!$("#fc").value||x.civil===$("#fc").value));
+    $("#lst").innerHTML=`<p>${l.length} resultado(s)</p>`+listHTML(l);bindList();return l};
+  ["q","fp","fs","fc"].forEach(i=>$("#"+i).oninput=f);f();
+  $("#nw").onclick=()=>form();$("#ex").onclick=()=>csv(f());}
+
+function vProv(m){
+  if(!provSel){const pc=count(members,x=>x.provincia);
+    m.innerHTML=`<h2>Províncias de Moçambique</h2><div class="pg">${PROV.map(p=>`<div class="card pc" data-p="${p}"><span>${p}</span><b>${pc[p]||0}</b><small>membros</small></div>`).join("")}</div>`;
+    m.querySelectorAll("[data-p]").forEach(c=>c.onclick=()=>{provSel=c.dataset.p;render()});return}
+  const l=members.filter(x=>x.provincia===provSel),t=l.length;
+  m.innerHTML=`<div class="tools noprint"><button class="btn o" id="bk">← Províncias</button><button class="btn" id="nw">+ Novo membro em ${provSel}</button><button class="btn o" id="pr">Imprimir relatório</button><button class="btn o" id="ex">Exportar CSV</button></div>
+  <h2>Relatório · ${provSel}</h2><p>Gerado em ${new Date().toLocaleDateString("pt-PT")} · The GoodNews World</p>
+  <div class="grid"><div class="card kpi"><b>${t}</b><span>Membros</span></div><div class="card kpi"><b>${l.filter(x=>x.sexo==="Masculino").length}</b><span>Homens</span></div><div class="card kpi"><b>${l.filter(x=>x.sexo==="Feminino").length}</b><span>Mulheres</span></div></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"><div class="card"><h3>Faixa etária</h3>${bars(count(l,ageGrp),t)}</div><div class="card"><h3>Estado civil</h3>${bars(count(l,x=>x.civil),t)}</div></div>
+  <div class="card">${listHTML(l)}</div>`;
+  $("#bk").onclick=()=>{provSel="";render()};$("#nw").onclick=()=>form(null,provSel);$("#pr").onclick=()=>print();$("#ex").onclick=()=>csv(l);bindList()}
+
+function vHist(m){
+  if(!isAdmin()){m.innerHTML="<h2>Acesso restrito</h2>";return}
+  m.innerHTML=`<h2>Histórico de atividade</h2><div class="card tw"><table><tr><th>Data</th><th>Utilizador</th><th>Ação</th><th>Membro</th><th>Província</th></tr>
+  ${hist.map(h=>`<tr><td>${h.at?h.at.toDate().toLocaleString("pt-PT"):"…"}</td><td>${esc(h.user)}</td><td>${esc(h.acao)}</td><td>${esc(h.membroId)} · ${esc(h.membroNome)}</td><td>${esc(h.provincia)}</td></tr>`).join("")||"<tr><td colspan=5>Sem registos.</td></tr>"}</table></div>`}
+
+/* ---------- Form (novo / editar) ---------- */
+function form(x,prov){
+  const e=!!x;x=x||{};let foto=x.foto||"";
+  const d=$("#dlg");
+  d.innerHTML=`<form id="mf"><h2>${e?"Editar "+esc(x.id):"Novo membro"}</h2>
+  <div class="ph"><span id="pv">${avatar({...x,foto})}</span><div><label style="margin:0">Fotografia</label><input type="file" id="fi" accept="image/*"></div></div>
+  <div class="f2"><div class="full"><label>Província de registo</label><select id="provincia" required><option value="">Selecione a província</option>${PROV.map(p=>`<option ${p===(x.provincia||prov)?"selected":""}>${p}</option>`).join("")}</select></div>
+  <div class="full"><label>Nome completo</label><input id="nome" required value="${esc(x.nome)}" placeholder="Digite o seu nome completo"></div>
+  <div><label>Data de nascimento</label><input id="nascimento" type="date" value="${esc(x.nascimento)}"></div>
+  <div><label>Sexo</label><select id="sexo"><option value="">Selecione</option>${["Masculino","Feminino"].map(p=>`<option ${p===x.sexo?"selected":""}>${p}</option>`).join("")}</select></div>
+  <div><label>Contacto telefónico</label><input id="telefone" value="${esc(x.telefone)}" placeholder="+258 84 123 4567"></div>
+  <div><label>Endereço residencial</label><input id="endereco" value="${esc(x.endereco)}"></div>
+  <div><label>Estado civil</label><select id="civil"><option value="">Selecione</option>${CIVIL.map(p=>`<option ${p===x.civil?"selected":""}>${p}</option>`).join("")}</select></div>
+  <div><label>Nome do contacto de emergência</label><input id="emergNome" value="${esc(x.emergNome)}"></div>
+  <div><label>Telefone de emergência</label><input id="emergTel" value="${esc(x.emergTel)}"></div></div>
+  <div class="acts"><button type="button" class="btn o" id="cx">Cancelar</button><button class="btn" id="sv">Registar</button></div></form>`;
+  d.showModal();$("#cx").onclick=()=>d.close();
+  $("#fi").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),s=320/Math.max(im.width,im.height,320);
+    c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);foto=c.toDataURL("image/jpeg",.72);$("#pv").innerHTML=avatar({nome:"",foto})};im.src=URL.createObjectURL(f)};
+  $("#mf").onsubmit=async ev=>{ev.preventDefault();$("#sv").disabled=true;
+    const v=Object.fromEntries(["provincia","nome","nascimento","sexo","telefone","endereco","civil","emergNome","emergTel"].map(k=>[k,$("#"+k).value.trim()]));
+    try{
+      if(e){await setDoc(doc(db,"members",x._id),{...v,foto,editadoPor:me.email,editadoEm:serverTimestamp()},{merge:true});await log("Editou",{...x,...v})}
+      else{ // ID automático e sequencial (transação)
+        const cr=doc(db,"counters","members");let seq;
+        await runTransaction(db,async t=>{const s=await t.get(cr);seq=(s.exists()?s.data().n:0)+1;t.set(cr,{n:seq});
+          t.set(doc(db,"members","M"+String(seq).padStart(5,"0")),{...v,foto,seq,id:"M-"+String(seq).padStart(4,"0"),criadoPor:me.email,criadoEm:serverTimestamp()})});
+        await log("Registou",{id:"M-"+String(seq).padStart(4,"0"),...v});}
+      d.close();toast(e?"Alterações guardadas":"Membro registado")}
+    catch(er){toast("Erro ao guardar: "+er.message);$("#sv").disabled=false}};
+}
+</script>
+</body>
+</html>
